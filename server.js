@@ -1,6 +1,7 @@
 const express=require('express');
 require('dotenv').config();
 const connectDB=require('./config/db');
+const{protect}=require('./middleware/authMiddleware')
 
 connectDB();
 
@@ -13,6 +14,11 @@ app.use('/api/auth',require('./routes/authRoutes'))
 app.get('/',(req,res)=>{
     res.json({message:'MindSpace API is running'})
 });
+
+app.get('/api/auth/profile', protect, (req, res) => {
+  res.json(req.user);
+});
+
 
 const PORT=process.env.PORT || 5000;
 
