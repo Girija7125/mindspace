@@ -11,7 +11,9 @@ app.use(express.json());
 
 app.use('/api/auth',require('./routes/authRoutes'));
 
-app.use('/api/moods',require('./routes/moodRoutes'))
+app.use('/api/moods',require('./routes/moodRoutes'));
+
+app.use('/api/goals', require('./routes/goalRoutes'));
 
 app.get('/',(req,res)=>{
     res.json({message:'MindSpace API is running'})
