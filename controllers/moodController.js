@@ -34,13 +34,6 @@ const createMoodLog = async (req, res) => {
         user.lastLogDate = today;
         await user.save()
         res.status(201).json(moodLog)
-
-
-
-
-
-
-
     } catch (error) {
         console.error(error);
 
@@ -61,5 +54,46 @@ const getMoodLog = async (req, res) => {
     }
 }
 
+const updateMoodLog = async (req, res) => {
+    try {
+        const moodLog = await MoodLog.findById(req.params.id);
+        if (!moodLog) {
+            return res.status(404).json({ message: 'Mood Log not found' })
+        }
+        if (moodLog.user.toString() !== req.user._id.toString()) {
+            return res.status(403).json({ message: 'Not authorized to update this mood log' })
+        }
 
-module.exports = { createMoodLog, getMoodLog }
+        const updateMoodLog = await MoodLog.findByIdAndUpdate(req.params.id, req.body, {
+            new: true,
+            runValidators: true
+        })
+        res.status(200).json(updatedMoodLog);
+    } catch (error) {
+        console.error(error);
+        if (error.name === 'ValidationError') {
+            return res.status(400).json({ message: 'Invalid mood log data' });
+        }
+        res.status(500).json({ message: 'Something went wrong, please try again' });
+    }
+
+}
+
+const deleteMoodLog = async (req,res)=>{
+    try {
+        const moodLog = await MoodLog.findById(req.params.id);
+        if(!moodLog){
+            return res.status(404).json({message:'Mood Log not found'})
+        }
+        if(moodLog.user.toString() !== req.user._id.toString()){
+            return res.status(403).json({message:'Not authorized to delete this mood Log'})
+        }
+        await moodLog.deleteOne();
+        res.status(200).json({ message: 'Mood log deleted successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Something went wrong, please try again' });
+    }
+}
+
+module.exports = { createMoodLog, getMoodLog,updateMoodLog,deleteMoodLog }
